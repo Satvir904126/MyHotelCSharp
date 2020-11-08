@@ -12,7 +12,7 @@ namespace MyHotel
     // Manage room class
     class Room
     {
-        //function to get list of rooms
+        //function to get list of rooms type
         Connect conn = new Connect();
         public DataTable roomTypeList()
         {
@@ -24,6 +24,56 @@ namespace MyHotel
 
 
             return table;
+        }
+
+        //function to get list of rooms by type
+        public DataTable roomByType(int type)
+        {
+            SqlCommand command = new SqlCommand("Select * From [rooms] where type ="+ type +"and free = 'YES'", conn.getConnection());
+            SqlDataAdapter adapter = new SqlDataAdapter();
+            DataTable table = new DataTable();
+            adapter.SelectCommand = command;
+            adapter.Fill(table);
+
+
+            return table;
+        }
+        //function to set list of rooms by free colomn YES or NO
+        public bool setRoomFree(int number,String Yes_or_No)
+        {
+            SqlCommand command = new SqlCommand("UPDATE [rooms]  SET free = @yes_no WHERE roomNumber= @rnum", conn.getConnection());
+            SqlDataAdapter adapter = new SqlDataAdapter();
+            DataTable table = new DataTable();
+            command.Parameters.AddWithValue("@rnum", number);
+            command.Parameters.AddWithValue("@yes_no", Yes_or_No);
+
+            conn.openConnection();
+            if (command.ExecuteNonQuery() > 1)
+            {
+                conn.closeConnection();
+
+                return true;
+            }
+            else
+            {
+                conn.closeConnection();
+                return false;
+            }
+
+        }
+
+
+        //function to return  room  type for datagrid
+        public int getRoomType(int number)
+        {
+            SqlCommand command = new SqlCommand("Select type From [rooms] where roomNumber =" + number , conn.getConnection());
+            SqlDataAdapter adapter = new SqlDataAdapter();
+            DataTable table = new DataTable();
+            adapter.SelectCommand = command;
+            adapter.Fill(table);
+
+
+            return Convert.ToInt32(table.Rows[0][0].ToString());
         }
 
 
